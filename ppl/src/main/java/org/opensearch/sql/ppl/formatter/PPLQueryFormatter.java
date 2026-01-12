@@ -427,18 +427,7 @@ public class PPLQueryFormatter {
                 return OP_MULTIPLY;
             }
 
-            String fieldName = safeVisit(ctx.wcQualifiedName());
-
-            // Handle prefix wildcards like "*name" - add space after leading *
-            if (
-                fieldName.startsWith(OP_MULTIPLY) &&
-                fieldName.length() > 1 &&
-                fieldName.charAt(1) != ' '
-            ) {
-                return OP_MULTIPLY + SPACE + fieldName.substring(1);
-            }
-
-            return fieldName;
+            return safeVisit(ctx.wcQualifiedName());
         }
 
         // ========== Where Command ==========

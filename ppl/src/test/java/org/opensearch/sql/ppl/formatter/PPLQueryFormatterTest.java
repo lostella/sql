@@ -143,36 +143,16 @@ public class PPLQueryFormatterTest {
             "source=logs|fields name,age,status",
             "source=logs | fields name, age, status"
         );
-    }
-
-    @Test
-    public void testFieldsWithWildcard() {
         assertFormatting("source=accounts|fields account*", "source=accounts | fields account*");
-    }
-
-    @Test
-    public void testFieldsWithSuffixWildcard() {
-        assertFormatting("source=accounts|fields *name", "source=accounts | fields * name");
-    }
-
-    @Test
-    public void testFieldsWithExclusion() {
+        assertFormatting("source=accounts|fields *name", "source=accounts | fields *name");
         assertFormatting(
-            "source=accounts|fields - account_number",
-            "source=accounts | fields - account_number"
+            "source=accounts|fields - account_number,fullName",
+            "source=accounts | fields - account_number, fullName"
         );
-    }
-
-    @Test
-    public void testFieldsWithInclusion() {
         assertFormatting(
-            "source=accounts|fields + account_number",
-            "source=accounts | fields + account_number"
+            "source=accounts|fields - account_number,*Name",
+            "source=accounts | fields - account_number, *Name"
         );
-    }
-
-    @Test
-    public void testFieldsAllStar() {
         assertFormatting("source=logs|fields *", "source=logs | fields *");
     }
 
