@@ -18,6 +18,7 @@ public class PPLQueryFormatterTest {
         assertEquals(expected, formatter.format(expected));
     }
 
+    // Basic formatting tests
     @Test
     public void testBasicSearchFormatting() {
         assertFormatting("search source=logs", "source=logs");
@@ -32,14 +33,6 @@ public class PPLQueryFormatterTest {
     }
 
     @Test
-    public void testStatsCommand() {
-        assertFormatting(
-            "source=logs|stats count() by status",
-            "source=logs | stats count() by status"
-        );
-    }
-
-    @Test
     public void testComplexQuery() {
         assertFormatting(
             "search source=access_logs status=200|fields timestamp,ip,response_time|where response_time>1000|stats avg(response_time) by ip",
@@ -47,6 +40,7 @@ public class PPLQueryFormatterTest {
         );
     }
 
+    // Describe command tests
     @Test
     public void testDescribeCommand() {
         assertFormatting("describe logs", "describe logs");
@@ -67,6 +61,7 @@ public class PPLQueryFormatterTest {
         assertFormatting("describe cluster:logs*,users", "describe cluster:logs*, users");
     }
 
+    // Fields command tests
     @Test
     public void testFieldsWithWildcard() {
         assertFormatting("source=accounts|fields account*", "source=accounts | fields account*");
@@ -85,9 +80,19 @@ public class PPLQueryFormatterTest {
         );
     }
 
+    // Index patterns
     @Test
     public void testIndexWithWildcard() {
         assertFormatting("source=logs*|fields message", "source=logs* | fields message");
+    }
+
+    // Stats commands
+    @Test
+    public void testStatsCommand() {
+        assertFormatting(
+            "source=logs|stats count() by status",
+            "source=logs | stats count() by status"
+        );
     }
 
     @Test
@@ -98,6 +103,7 @@ public class PPLQueryFormatterTest {
         );
     }
 
+    // Join command
     @Test
     public void testJoinCommand() {
         assertFormatting(
@@ -106,6 +112,7 @@ public class PPLQueryFormatterTest {
         );
     }
 
+    // Case normalization tests
     @Test
     public void testUppercaseCommands() {
         assertFormatting(
@@ -122,11 +129,53 @@ public class PPLQueryFormatterTest {
         );
     }
 
+    // Operator formatting tests
+    @Test
+    public void testComparisonOperators() {
+        assertFormatting("source=logs|where age>30", "source=logs | where age > 30");
+        assertFormatting("source=logs|where age<50", "source=logs | where age < 50");
+        assertFormatting("source=logs|where age>=21", "source=logs | where age >= 21");
+        assertFormatting("source=logs|where age<=65", "source=logs | where age <= 65");
+        assertFormatting("source=logs|where status!=error", "source=logs | where status != error");
+    }
+
+    @Test
+    public void testEqualsOperatorSpacing() {
+        assertFormatting("source=logs|where status=active", "source=logs | where status = active");
+        assertFormatting(
+            "source=logs|eval new_field=old_field",
+            "source=logs | eval new_field = old_field"
+        );
+    }
+
+    @Test
+    public void testSourceEqualsNoSpacing() {
+        assertFormatting("source = logs", "source=logs");
+        assertFormatting("source  =  logs", "source=logs");
+    }
+
+    // Spacing normalization tests
     @Test
     public void testFormattingWithVariousSpacing() {
         assertFormatting(
             "source=logs| where latency>=400| fields name",
             "source=logs | where latency >= 400 | fields name"
+        );
+    }
+
+    @Test
+    public void testCommaSpacing() {
+        assertFormatting(
+            "source=logs|fields name,age,status",
+            "source=logs | fields name, age, status"
+        );
+    }
+
+    @Test
+    public void testPipeSpacing() {
+        assertFormatting(
+            "source=logs|fields name|where age>30|stats count()",
+            "source=logs | fields name | where age > 30 | stats count()"
         );
     }
 }

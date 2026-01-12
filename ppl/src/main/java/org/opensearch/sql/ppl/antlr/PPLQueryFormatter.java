@@ -15,17 +15,24 @@ public class PPLQueryFormatter {
             .toLowerCase() // Convert to lowercase
             .replaceAll("\\s*\\|\\s*", " | ") // Normalize pipe spacing
             .replaceAll("\\s*,\\s*", ", ") // Normalize comma spacing
-            .replaceAll("\\s*>\\s*", " > ") // Normalize greater than spacing
-            .replaceAll("\\s*<\\s*", " < ") // Normalize less than spacing
             .replaceAll("^search\\s+", "") // Remove search prefix
             .replaceAll("\\s+", " ") // Normalize whitespace
             .trim();
 
+        // Handle compound operators first (before single operators)
+        formatted = formatted.replaceAll("\\s*>=\\s*", " >= ");
+        formatted = formatted.replaceAll("\\s*<=\\s*", " <= ");
+        formatted = formatted.replaceAll("\\s*!=\\s*", " != ");
+        
+        // Handle single operators (but avoid breaking compound operators)
+        formatted = formatted.replaceAll("(?<!>)\\s*>\\s*(?!=)", " > ");
+        formatted = formatted.replaceAll("(?<!<)\\s*<\\s*(?!=)", " < ");
+
         // Fix source= to not have spaces around equals
         formatted = formatted.replaceAll("source\\s*=\\s*", "source=");
 
-        // Add spaces around other equals signs (but not source=)
-        formatted = formatted.replaceAll("(?<!source)\\s*=\\s*", " = ");
+        // Add spaces around other equals signs (but not source=, and not compound operators)
+        formatted = formatted.replaceAll("(?<!source)(?<!>)(?<!<)(?<!!)\\s*=\\s*", " = ");
 
         return formatted;
     }
