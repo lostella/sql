@@ -93,7 +93,7 @@ public class PPLQueryFormatterTest {
     public void testEvalMultipleFields() {
         assertFormatting(
             "source=accounts|eval doubleAge=age*2,ddAge=doubleAge*2",
-            "source=accounts | eval doubleage = age * 2, ddage = doubleage * 2"
+            "source=accounts | eval doubleAge = age * 2, ddAge = doubleAge * 2"
         );
     }
 
@@ -162,7 +162,7 @@ public class PPLQueryFormatterTest {
     public void testLikeFunctionWithCaseSensitive() {
         assertFormatting(
             "source=people|where LIKE(address,'%Holmes%',true)",
-            "source=people | where like(address, '%holmes%', true)"
+            "source=people | where like(address, '%Holmes%', true)"
         );
     }
 
@@ -170,7 +170,7 @@ public class PPLQueryFormatterTest {
     public void testILikeFunction() {
         assertFormatting(
             "source=people|where ILIKE(name,'_ELLo%')",
-            "source=people | where ilike(name, '_ello%')"
+            "source=people | where ilike(name, '_ELLo%')"
         );
     }
 
