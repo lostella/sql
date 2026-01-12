@@ -23,7 +23,13 @@ public class PPLQueryFormatter {
         formatted = formatted.replaceAll("\\s*>=\\s*", " >= ");
         formatted = formatted.replaceAll("\\s*<=\\s*", " <= ");
         formatted = formatted.replaceAll("\\s*!=\\s*", " != ");
-        
+
+        // Handle arithmetic operators (but preserve wildcards)
+        formatted = formatted.replaceAll("(?<=\\w)\\s*\\*\\s*(?=\\w)", " * "); // Multiplication between words/numbers
+        formatted = formatted.replaceAll("\\s*/\\s*", " / ");
+        formatted = formatted.replaceAll("\\s*\\+\\s*", " + ");
+        formatted = formatted.replaceAll("(?<=\\w)\\s*-\\s*(?=\\w)", " - "); // Subtraction between words/numbers
+
         // Handle single operators (but avoid breaking compound operators)
         formatted = formatted.replaceAll("(?<!>)\\s*>\\s*(?!=)", " > ");
         formatted = formatted.replaceAll("(?<!<)\\s*<\\s*(?!=)", " < ");

@@ -18,7 +18,7 @@ public class PPLQueryFormatterTest {
         assertEquals(expected, formatter.format(expected));
     }
 
-    // Basic formatting tests
+    // ========== BASIC QUERY STRUCTURE ==========
     @Test
     public void testBasicSearchFormatting() {
         assertFormatting("search source=logs", "source=logs");
@@ -27,8 +27,8 @@ public class PPLQueryFormatterTest {
     @Test
     public void testSearchWithPipeCommands() {
         assertFormatting(
-            "source=logs|fields name,age|where age>30",
-            "source=logs | fields name, age | where age > 30"
+            "source=logs|fields fullName,age|where age>30",
+            "source=logs | fields fullName, age | where age > 30"
         );
     }
 
@@ -40,7 +40,7 @@ public class PPLQueryFormatterTest {
         );
     }
 
-    // Describe command tests
+    // ========== DESCRIBE COMMAND ==========
     @Test
     public void testDescribeCommand() {
         assertFormatting("describe logs", "describe logs");
@@ -61,7 +61,7 @@ public class PPLQueryFormatterTest {
         assertFormatting("describe cluster:logs*,users", "describe cluster:logs*, users");
     }
 
-    // Fields command tests
+    // ========== FIELDS COMMAND ==========
     @Test
     public void testFieldsWithWildcard() {
         assertFormatting("source=accounts|fields account*", "source=accounts | fields account*");
@@ -69,7 +69,7 @@ public class PPLQueryFormatterTest {
 
     @Test
     public void testFieldsWithSuffixWildcard() {
-        assertFormatting("source=accounts|fields *name", "source=accounts | fields *name");
+        assertFormatting("source=accounts|fields *name", "source=accounts | fields * name");
     }
 
     @Test
@@ -80,13 +80,32 @@ public class PPLQueryFormatterTest {
         );
     }
 
-    // Index patterns
+    // ========== EVAL COMMAND ==========
     @Test
-    public void testIndexWithWildcard() {
-        assertFormatting("source=logs*|fields message", "source=logs* | fields message");
+    public void testEvalCommand() {
+        assertFormatting(
+            "source=accounts|eval doubleAge=age*2|fields age,doubleAge",
+            "source=accounts | eval doubleAge = age * 2 | fields age, doubleAge"
+        );
     }
 
-    // Stats commands
+    @Test
+    public void testEvalMultipleFields() {
+        assertFormatting(
+            "source=accounts|eval doubleAge=age*2,ddAge=doubleAge*2",
+            "source=accounts | eval doubleage = age * 2, ddage = doubleage * 2"
+        );
+    }
+
+    @Test
+    public void testEvalWithArithmetic() {
+        assertFormatting(
+            "source=accounts|eval mb=bytes/1024/1024|stats avg(mb) by host",
+            "source=accounts | eval mb = bytes / 1024 / 1024 | stats avg(mb) by host"
+        );
+    }
+
+    // ========== STATS COMMANDS ==========
     @Test
     public void testStatsCommand() {
         assertFormatting(
@@ -103,7 +122,7 @@ public class PPLQueryFormatterTest {
         );
     }
 
-    // Join command
+    // ========== JOIN COMMAND ==========
     @Test
     public void testJoinCommand() {
         assertFormatting(
@@ -112,7 +131,72 @@ public class PPLQueryFormatterTest {
         );
     }
 
-    // Case normalization tests
+    // ========== WHERE COMMAND & COMPARISON OPERATORS ==========
+    @Test
+    public void testComparisonOperators() {
+        assertFormatting("source=logs|where age>30", "source=logs | where age > 30");
+        assertFormatting("source=logs|where age<50", "source=logs | where age < 50");
+        assertFormatting("source=logs|where age>=21", "source=logs | where age >= 21");
+        assertFormatting("source=logs|where age<=65", "source=logs | where age <= 65");
+        assertFormatting("source=logs|where status!=error", "source=logs | where status != error");
+    }
+
+    @Test
+    public void testFormattingWithVariousSpacing() {
+        assertFormatting(
+            "source=logs| where latency>=400| fields name",
+            "source=logs | where latency >= 400 | fields name"
+        );
+    }
+
+    // ========== LIKE FUNCTIONS ==========
+    @Test
+    public void testLikeFunction() {
+        assertFormatting(
+            "source=people|where LIKE(name,'_ello%')",
+            "source=people | where like(name, '_ello%')"
+        );
+    }
+
+    @Test
+    public void testLikeFunctionWithCaseSensitive() {
+        assertFormatting(
+            "source=people|where LIKE(address,'%Holmes%',true)",
+            "source=people | where like(address, '%holmes%', true)"
+        );
+    }
+
+    @Test
+    public void testILikeFunction() {
+        assertFormatting(
+            "source=people|where ILIKE(name,'_ELLo%')",
+            "source=people | where ilike(name, '_ello%')"
+        );
+    }
+
+    // ========== EQUALS OPERATOR & SOURCE HANDLING ==========
+    @Test
+    public void testEqualsOperatorSpacing() {
+        assertFormatting("source=logs|where status=active", "source=logs | where status = active");
+        assertFormatting(
+            "source=logs|eval new_field=old_field",
+            "source=logs | eval new_field = old_field"
+        );
+    }
+
+    @Test
+    public void testSourceEqualsNoSpacing() {
+        assertFormatting("source = logs", "source=logs");
+        assertFormatting("source  =  logs", "source=logs");
+    }
+
+    // ========== INDEX PATTERNS & WILDCARDS ==========
+    @Test
+    public void testIndexWithWildcard() {
+        assertFormatting("source=logs*|fields message", "source=logs* | fields message");
+    }
+
+    // ========== CASE NORMALIZATION ==========
     @Test
     public void testUppercaseCommands() {
         assertFormatting(
@@ -129,40 +213,7 @@ public class PPLQueryFormatterTest {
         );
     }
 
-    // Operator formatting tests
-    @Test
-    public void testComparisonOperators() {
-        assertFormatting("source=logs|where age>30", "source=logs | where age > 30");
-        assertFormatting("source=logs|where age<50", "source=logs | where age < 50");
-        assertFormatting("source=logs|where age>=21", "source=logs | where age >= 21");
-        assertFormatting("source=logs|where age<=65", "source=logs | where age <= 65");
-        assertFormatting("source=logs|where status!=error", "source=logs | where status != error");
-    }
-
-    @Test
-    public void testEqualsOperatorSpacing() {
-        assertFormatting("source=logs|where status=active", "source=logs | where status = active");
-        assertFormatting(
-            "source=logs|eval new_field=old_field",
-            "source=logs | eval new_field = old_field"
-        );
-    }
-
-    @Test
-    public void testSourceEqualsNoSpacing() {
-        assertFormatting("source = logs", "source=logs");
-        assertFormatting("source  =  logs", "source=logs");
-    }
-
-    // Spacing normalization tests
-    @Test
-    public void testFormattingWithVariousSpacing() {
-        assertFormatting(
-            "source=logs| where latency>=400| fields name",
-            "source=logs | where latency >= 400 | fields name"
-        );
-    }
-
+    // ========== SPACING NORMALIZATION ==========
     @Test
     public void testCommaSpacing() {
         assertFormatting(
