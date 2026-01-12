@@ -91,7 +91,7 @@ public class PPLQueryFormatterTest {
     }
 
     @Test
-    public void testEventstats() {
+    public void testEventstatsCommand() {
         assertFormatting(
             "source=table|eventstats avg(a) by b",
             "source=table | eventstats avg(a) by b"
@@ -123,7 +123,10 @@ public class PPLQueryFormatterTest {
     }
 
     @Test
-    public void testCustomIndentation() {
-        assertFormatting("source=logs|fields name", "source=logs | fields name");
+    public void testFormattingWithVariousSpacing() {
+        assertFormatting(
+            "source=logs| where latency>=400| fields name",
+            "source=logs | where latency >= 400 | fields name"
+        );
     }
 }
