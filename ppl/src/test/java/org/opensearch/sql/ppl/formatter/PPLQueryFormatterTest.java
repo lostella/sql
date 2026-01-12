@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-package org.opensearch.sql.ppl.antlr;
+package org.opensearch.sql.ppl.formatter;
 
 import static org.junit.Assert.*;
 
