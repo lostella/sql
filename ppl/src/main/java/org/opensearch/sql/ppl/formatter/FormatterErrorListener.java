@@ -17,26 +17,25 @@ import org.antlr.v4.runtime.Recognizer;
  */
 public class FormatterErrorListener extends BaseErrorListener {
 
-    private boolean hasErrors = false;
+  private boolean hasErrors = false;
 
-    @Override
-    public void syntaxError(
-        Recognizer<?, ?> recognizer,
-        Object offendingSymbol,
-        int line,
-        int charPositionInLine,
-        String msg,
-        RecognitionException e
-    ) {
-        hasErrors = true;
-    }
+  @Override
+  public void syntaxError(
+      Recognizer<?, ?> recognizer,
+      Object offendingSymbol,
+      int line,
+      int charPositionInLine,
+      String msg,
+      RecognitionException e) {
+    hasErrors = true;
+  }
 
-    /**
-     * Checks whether any syntax errors were encountered.
-     *
-     * @return true if there are one or more syntax errors
-     */
-    public boolean hasErrors() {
-        return hasErrors;
-    }
+  /**
+   * Checks whether any syntax errors were encountered.
+   *
+   * @return true if there are one or more syntax errors
+   */
+  public boolean hasErrors() {
+    return hasErrors;
+  }
 }
