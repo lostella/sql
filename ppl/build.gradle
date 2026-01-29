@@ -123,3 +123,17 @@ jacocoTestCoverageVerification {
     }
 }
 check.dependsOn jacocoTestCoverageVerification
+
+tasks.register('runDatasetFormatter', JavaExec) {
+    description = 'Run the DatasetQueryFormatter application'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'org.opensearch.sql.ppl.formatter.DatasetQueryFormatter'
+    def argList = []
+    if (project.hasProperty('inputPath')) {
+        argList.add(project.inputPath)
+    }
+    if (project.hasProperty('outputPath')) {
+        argList.add(project.outputPath)
+    }
+    args = argList
+}
