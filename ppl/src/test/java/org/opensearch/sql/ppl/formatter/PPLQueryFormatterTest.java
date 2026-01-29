@@ -351,14 +351,17 @@ public class PPLQueryFormatterTest {
     @Test
     public void testEvalCommand() {
         assertFormatting(
-            "source=logs|eval doubled=value*2",
+            "source=logs|eval doubled=value * 2",
             "source=logs | eval doubled = value * 2"
         );
     }
 
     @Test
     public void testEvalMultipleFields() {
-        assertFormatting("source=logs|eval a=b+1,c=d*2", "source=logs | eval a = b + 1, c = d * 2");
+        assertFormatting(
+            "source=logs|eval a=b+1,c=d * 2",
+            "source=logs | eval a = b + 1, c = d * 2"
+        );
     }
 
     @Test
@@ -1083,7 +1086,10 @@ public class PPLQueryFormatterTest {
 
     @Test
     public void testMultiplicationInField() {
-        assertFormatting("source=logs|eval doubled=age*2", "source=logs | eval doubled = age * 2");
+        assertFormatting(
+            "source=logs|eval doubled=age * 2",
+            "source=logs | eval doubled = age * 2"
+        );
     }
 
     @Test
@@ -1113,8 +1119,26 @@ public class PPLQueryFormatterTest {
     @Test
     public void testChainedArithmetic() {
         assertFormatting(
-            "source=logs|eval complex=a*2+b/3-c",
+            "source=logs|eval complex=a * 2+b/3-c",
             "source=logs | eval complex = a * 2 + b / 3 - c"
+        );
+    }
+
+    @Test
+    public void testMultiplicationWithoutSpacesFailsToParse() {
+        // Multiplication without spaces around * is not parsed correctly
+        // because the lexer treats *2 or *value as a wildcard pattern
+        assertFalse(
+            "Query with 'age*2' should fail to parse",
+            parsesSuccessfully("source=logs|eval doubled=age*2")
+        );
+        assertFalse(
+            "Query with '2*value' should fail to parse",
+            parsesSuccessfully("source=logs|eval result=2*value")
+        );
+        assertFalse(
+            "Query with 'a*b' should fail to parse",
+            parsesSuccessfully("source=logs|eval product=a*b")
         );
     }
 
