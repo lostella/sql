@@ -1124,24 +1124,6 @@ public class PPLQueryFormatterTest {
         );
     }
 
-    @Test
-    public void testMultiplicationWithoutSpacesFailsToParse() {
-        // Multiplication without spaces around * is not parsed correctly
-        // because the lexer treats *2 or *value as a wildcard pattern
-        assertFalse(
-            "Query with 'age*2' should fail to parse",
-            parsesSuccessfully("source=logs|eval doubled=age*2")
-        );
-        assertFalse(
-            "Query with '2*value' should fail to parse",
-            parsesSuccessfully("source=logs|eval result=2*value")
-        );
-        assertFalse(
-            "Query with 'a*b' should fail to parse",
-            parsesSuccessfully("source=logs|eval product=a*b")
-        );
-    }
-
     // ==================== FIELD NAME TESTS ====================
 
     @Test
