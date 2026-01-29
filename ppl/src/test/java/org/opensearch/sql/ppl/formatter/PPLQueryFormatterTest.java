@@ -1090,7 +1090,7 @@ public class PPLQueryFormatterTest {
     public void testMultiplicationNumberFirst() {
         // Need space before * to prevent lexer from treating *value as wildcard pattern
         assertFormatting(
-            "source=logs|eval result=2*value",
+            "source=logs|eval result=2 * value",
             "source=logs | eval result = 2 * value"
         );
     }
