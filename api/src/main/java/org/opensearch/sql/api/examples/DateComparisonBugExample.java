@@ -1,5 +1,6 @@
 package org.opensearch.sql.api.examples;
 
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.LinkedHashMap;
@@ -25,14 +26,15 @@ import org.opensearch.sql.api.UnifiedQueryPlanner;
 import org.opensearch.sql.api.compiler.UnifiedQueryCompiler;
 import org.opensearch.sql.executor.QueryType;
 
+/** MWE: DATE() function comparison fails - returns string instead of int (days since epoch). */
 public class DateComparisonBugExample {
 
   public static void main(String[] args) throws Exception {
     Map<String, SqlTypeName> schema = new LinkedHashMap<>();
     schema.put("id", SqlTypeName.INTEGER);
-    schema.put("year_hired", SqlTypeName.INTEGER);
+    schema.put("date_hired", SqlTypeName.DATE);
 
-    List<Object[]> rows = List.of(new Object[] {1, 2020}, new Object[] {2, 2022});
+    List<Object[]> rows = List.of(new Object[] {1, Date.valueOf("2020-03-15")}, new Object[] {2, Date.valueOf("2020-06-15")});
 
     AbstractSchema testSchema =
         new AbstractSchema() {
@@ -52,12 +54,12 @@ public class DateComparisonBugExample {
       UnifiedQueryPlanner planner = new UnifiedQueryPlanner(context);
       UnifiedQueryCompiler compiler = new UnifiedQueryCompiler(context);
 
-      String query = "source=employees | where year_hired > 2020";
+      String query = "source=employees | where date_hired > DATE('2020-06-01')";
       PreparedStatement stmt = compiler.compile(planner.plan(query));
       ResultSet rs = stmt.executeQuery();
 
       while (rs.next()) {
-        System.out.println("id=" + rs.getInt(1) + ", year_hired=" + rs.getInt(2));
+        System.out.println("id=" + rs.getInt(1) + ", date_hired=" + rs.getDate(2));
       }
     }
   }
