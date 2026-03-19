@@ -84,3 +84,10 @@ check.dependsOn jacocoTestCoverageVerification
 application {
     mainClass = 'org.opensearch.sql.api.examples.UnifiedQueryApiExample'
 }
+
+tasks.register('runExample', JavaExec) {
+    group = 'application'
+    description = 'Run example application'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = project.findProperty('mainClass') ?: 'org.opensearch.sql.api.examples.DateComparisonBugExample'
+}
