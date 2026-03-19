@@ -9,6 +9,7 @@ plugins {
     id "io.freefair.lombok"
     id 'jacoco'
     id 'com.diffplug.spotless'
+    id 'application'
 }
 
 dependencies {
@@ -79,3 +80,7 @@ jacocoTestCoverageVerification {
     }
 }
 check.dependsOn jacocoTestCoverageVerification
+
+application {
+    mainClass = 'org.opensearch.sql.api.examples.UnifiedQueryApiExample'
+}
