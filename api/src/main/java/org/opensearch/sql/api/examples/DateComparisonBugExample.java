@@ -1,3 +1,28 @@
+/*
+PUT /employees
+{
+  "mappings": {
+    "properties": {
+      "id": { "type": "integer" },
+      "date_hired": { "type": "date", "format": "yyyy-MM-dd" }
+    }
+  }
+}
+
+POST /employees/_bulk
+{"index": {}}
+{"id": 1, "date_hired": "2020-03-15"}
+{"index": {}}
+{"id": 2, "date_hired": "2020-06-15"}
+
+
+POST /_plugins/_ppl
+{
+  "query": "source=employees | where date_hired > DATE('2020-06-01')"
+}
+*/
+
+
 package org.opensearch.sql.api.examples;
 
 import java.sql.Date;
